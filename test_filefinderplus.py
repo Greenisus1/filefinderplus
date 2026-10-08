@@ -1,0 +1,27 @@
+import unittest,tempfile
+from pathlib import Path
+import filefinderplus as f
+class Tests(unittest.TestCase):
+ def setUp(self):self.t=tempfile.TemporaryDirectory();self.p=Path(self.t.name)/'a.sh';self.p.write_bytes(b'echo hi\r\n')
+ def tearDown(self):self.t.cleanup()
+ def test_read_exact(self):self.assertEqual(f.read_text(self.p),('echo hi\r\n',b'echo hi\r\n'))
+ def test_unicode(self):self.p.write_text('hello ☃');self.assertEqual(f.read_text(self.p)[0],'hello ☃')
+ def test_binary(self):self.p.write_bytes(b'a\0b');self.assertRaises(ValueError,f.read_text,self.p)
+ def test_invalid(self):self.p.write_bytes(b'\xff');self.assertRaises(UnicodeError,f.read_text,self.p)
+ def test_cap(self):self.p.write_bytes(b'a'*(f.MAX_TEXT+1));self.assertRaises(ValueError,f.read_text,self.p)
+ def test_directory(self):self.assertRaises(ValueError,f.read_text,self.p.parent)
+ def test_symlink(self):q=self.p.parent/'link';q.symlink_to(self.p);self.assertRaises(ValueError,f.read_text,q)
+ def test_save(self):f.save_text(self.p,'new',b'echo hi\r\n');self.assertEqual(self.p.read_bytes(),b'new')
+ def test_stale(self):self.assertRaises(ValueError,f.save_text,self.p,'new',b'old')
+ def test_new(self):q=self.p.parent/'new.txt';f.save_text(q,'ok',allow_new=True);self.assertEqual(q.read_text(),'ok')
+ def test_missing(self):self.assertRaises(ValueError,f.save_text,self.p.parent/'missing','ok')
+ def test_save_symlink(self):q=self.p.parent/'link';q.symlink_to(self.p);self.assertRaises(ValueError,f.save_text,q,'bad',b'echo hi\r\n')
+ def test_save_nul(self):self.assertRaises(ValueError,f.save_text,self.p,'a\0b',b'echo hi\r\n')
+ def test_save_cap(self):self.assertRaises(ValueError,f.save_text,self.p,'a'*(f.MAX_TEXT+1),b'echo hi\r\n')
+ def test_command(self):self.assertEqual(f.shell_command(self.p),(['bash',str(self.p)],str(self.p.parent)))
+ def test_nonsh(self):q=self.p.parent/'a.txt';q.write_text('x');self.assertRaises(ValueError,f.shell_command,q)
+ def test_order(self):(self.p.parent/'z').mkdir();p,rows=f.list_directory(self.p.parent);self.assertEqual(rows[0][1],'Folder')
+ def test_hidden(self):(self.p.parent/'.hidden').write_text('x');self.assertIn('.hidden',[x[0] for x in f.list_directory(self.p.parent)[1]])
+ def test_links_labeled(self):q=self.p.parent/'link';q.symlink_to(self.p);self.assertEqual(dict((x[0],x[1]) for x in f.list_directory(self.p.parent)[1])['link'],'Link')
+ def test_permission_preserved(self):self.p.chmod(0o750);f.save_text(self.p,'new',b'echo hi\r\n');self.assertEqual(self.p.stat().st_mode&0o777,0o750)
+if __name__=='__main__':unittest.main()
