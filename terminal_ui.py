@@ -19,7 +19,7 @@ class UI:
   if 0<=y<h and x<w-1:
    try:self.s.addnstr(y,x,safe(text),max(0,w-x-1),attr)
    except curses.error:pass
- def draw(self,subtitle,rows,selected=0,footer='↑↓ Select  Enter Open  Esc Back',offset=0):
+ def draw(self,subtitle,rows,selected=0,footer='↑↓ Select  PgUp/PgDn Page  Enter Open  Esc Back',offset=0):
   self.s.erase();h,w=self.s.getmaxyx()
   color=curses.color_pair(1) if curses.has_colors() else curses.A_BOLD
   self.put(0,0,'█ '+self.title+' █',color);self.put(1,0,'─'*max(0,w-1),color)
@@ -36,6 +36,10 @@ class UI:
    self.draw(subtitle,rows,index,offset=offset);k=self.s.get_wch()
    if k in (curses.KEY_UP,'k'):index=(index-1)%len(rows)
    elif k in (curses.KEY_DOWN,'j'):index=(index+1)%len(rows)
+   elif k==curses.KEY_PPAGE:index=max(0,index-page)
+   elif k==curses.KEY_NPAGE:index=min(len(rows)-1,index+page)
+   elif k==curses.KEY_HOME:index=0
+   elif k==curses.KEY_END:index=len(rows)-1
    elif k in ('\n','\r',curses.KEY_ENTER):return index
    elif k in ('\x1b','q'):return None
  def prompt(self,label,secret=False):
