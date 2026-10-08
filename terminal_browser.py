@@ -82,3 +82,27 @@ def browse(ui,start=None):
   except (OSError,ValueError,UnicodeError) as e:ui.message(str(e))
 
 def launch(start=None):return run('FileFinder+ 1.1.0',lambda ui:browse(ui,start))
+
+def pick_paths(ui,start=None):
+ """Reusable multiselect picker; no editing/execution. Returns immutable paths."""
+ folder=Path(start or Path.home()).expanduser().resolve();selected=set()
+ while True:
+  try:
+   folder,rows=list_directory(folder)
+   labels=['Done: '+str(len(selected))+' selected','Cancel selection','Parent folder','Open folder by path']+[('[x] ' if folder/name in selected else '[ ] ')+name+' ['+kind+']' for name,kind,size in rows]
+   index=ui.menu(str(folder),labels)
+   if index is None or index==1:return ()
+   if index==0:return tuple(sorted(selected))
+   if index==2:folder=folder.parent;continue
+   if index==3:
+    value=ui.prompt('Folder path')
+    if value:folder,_=list_directory(value)
+    continue
+   name,kind,size=rows[index-4];path=folder/name
+   if kind=='Folder':
+    action=ui.menu(str(path),['Open folder','Toggle whole folder selection','Back'])
+    if action==0:folder=path;continue
+    if action!=1:continue
+   if path in selected:selected.remove(path)
+   else:selected.add(path)
+  except (OSError,ValueError) as e:ui.message(str(e))
