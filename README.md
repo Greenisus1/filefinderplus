@@ -8,4 +8,8 @@ Run .sh confirms the path and working folder. Bash executes the selected on-disk
 
 `BrowserFrame(parent, start=None, select_only=False, selection_callback=None)` is the reusable component. Pack/grid its `.frame`. `.selected_paths()` returns a tuple of Paths. `select_only=True` removes editing/execution, suitable for upload selection. Callback receives selected paths. Call `.close()` before destroying a standalone window to handle dirty edits/running script.
 
-App Store Install checks Tk and copies the reusable module into `~/.local/share/filefinderplus/filefinderplus.py`. It replaces that module when reinstalling/updating. Run starts the standalone window. Pushpuffin imports that installed module; no remote download on Run. Tests: `python3 -m unittest -v`. Version 1.0.0. Linux/Xvfb tested; physical Raspberry Pi, macOS and Windows untested. Headless DietPi needs a desktop/VNC session; a bare SSH console cannot show this window.
+App Store Install checks Tk and copies the reusable module into `~/.local/share/filefinderplus/filefinderplus.py`. It replaces that module when reinstalling/updating. Run starts the standalone window. Pushpuffin imports that installed module; no remote download on Run. Tests: `python3 -m unittest -v`. Version 1.0.1. Linux/Xvfb tested; physical Raspberry Pi, macOS and Windows untested. Headless DietPi needs a desktop/VNC session; a bare SSH console cannot show this window.
+
+## Install repair (1.0.1)
+
+If Tk is missing and apt-get is available while running as root, the reviewed install hook announces and installs python3-tk. Otherwise it stops with instructions. It does not install a desktop. The run hook reports missing or inaccessible DISPLAY with desktop/VNC guidance instead of a traceback.
