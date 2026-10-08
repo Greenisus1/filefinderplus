@@ -25,10 +25,10 @@ check_display() {
 }
 case "${1:-}" in
  install)
-  ensure_tk
   mkdir -p "$HOME/.local/share/filefinderplus"
-  cp -- filefinderplus.py "$HOME/.local/share/filefinderplus/filefinderplus.py"
+  cp -- filefinderplus.py terminal_browser.py terminal_ui.py "$HOME/.local/share/filefinderplus/"
   ;;
- run) check_display; exec python3 filefinderplus.py ;;
- *) echo 'Usage: bash app-store.sh install|run'; exit 2 ;;
+ run) exec python3 filefinderplus.py ;;
+ gui) ensure_tk; check_display; exec python3 filefinderplus.py --gui ;;
+ *) echo 'Usage: bash app-store.sh install|run|gui'; exit 2 ;;
 esac
