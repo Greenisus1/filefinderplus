@@ -7,7 +7,7 @@ import subprocess
 import threading
 import queue
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 MAX_TEXT = 2 * 1024 * 1024
 TEXT_SUFFIXES = {'.txt', '.md', '.py', '.sh', '.json', '.csv', '.ini', '.cfg', '.conf', '.log', '.yaml', '.yml', '.toml', '.html', '.css', '.js', '.xml'}
 
