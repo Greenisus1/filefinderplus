@@ -7,7 +7,7 @@ import subprocess
 import threading
 import queue
 
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 MAX_TEXT = 2 * 1024 * 1024
 TEXT_SUFFIXES = {'.txt', '.md', '.py', '.sh', '.json', '.csv', '.ini', '.cfg', '.conf', '.log', '.yaml', '.yml', '.toml', '.html', '.css', '.js', '.xml'}
 
@@ -265,8 +265,11 @@ class BrowserFrame:
 
 def main():
     import argparse
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('folder',nargs='?');parser.add_argument('--version',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('folder',nargs='?');parser.add_argument('--gui',action='store_true');parser.add_argument('--version',action='store_true');args=parser.parse_args()
     if args.version:print(VERSION);return 0
+    if not args.gui:
+        from terminal_browser import launch
+        return launch(args.folder)
     try:
         tk,ttk,mb,fd=_tk();root=tk.Tk();root.title('FileFinder+');root.geometry('1120x720');root.minsize(900,600)
         ttk.Style().theme_use('clam');browser=BrowserFrame(root,args.folder);browser.frame.pack(fill='both',expand=True)
