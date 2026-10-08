@@ -1,4 +1,4 @@
-# FileFinder+ 1.1.1
+# FileFinder+ 1.1.2
 
 Terminal file browser, UTF-8 line editor and explicit shell runner. Works over interactive SSH with no desktop or Tk. Optional Tk GUI stays available. Standalone, no App Store dependency. No telemetry, automatic execution, upload, file deletion or persistent history.
 
@@ -24,4 +24,6 @@ Install needs no Tk/display and copies filefinderplus.py, terminal_browser.py an
 
 Python 3.10+, stdlib curses, Bash and Linux. Tests: python3 -m unittest -v. Linux PTY terminal capture and virtual-display GUI tested; physical Pi/non-Linux untested. Resize and tiny terminals are clipped rather than crashing, but 80x24 or larger is recommended.
 
-1.1.1 adds reusable terminal pick_paths(ui,start=None) for Pushpuffin multiselect; no edit/run in picker.
+1.1.2 adds reusable terminal pick_paths(ui,start=None) for Pushpuffin multiselect; no edit/run in picker.
+
+1.1.2: terminal lists support PageUp/PageDown, Home and End for large folders. Picker menus use same controls; no file/upload effects from navigation. Corrected terminal title.
