@@ -6,6 +6,12 @@ import signal
 from filefinderplus import list_directory,read_text,save_text,shell_command
 from terminal_ui import run
 
+def insert_line(lines,index,value):
+ """Preserve logical line separation when appending after a final unterminated line."""
+ if not 0<=index<=len(lines):raise ValueError('Line number out of range.')
+ if index>0 and lines[index-1] and not lines[index-1].endswith(('\n','\r')):lines[index-1]+='\n'
+ lines.insert(index,value+'\n')
+
 def edit(ui,path):
  text,original=read_text(path);lines=text.splitlines(keepends=True);dirty=False
  while True:
@@ -25,7 +31,7 @@ def edit(ui,path):
     new=ui.prompt('New line text (newline added)')
     if new is not None:
      if action==1:lines[n]=new+'\n'
-     else:lines.insert(n,new+'\n')
+     else:insert_line(lines,n,new)
      dirty=True
   elif action in (4,5):
    target=path
@@ -81,7 +87,7 @@ def browse(ui,start=None):
    elif choice==2:run_script(ui,path)
   except (OSError,ValueError,UnicodeError) as e:ui.message(str(e))
 
-def launch(start=None):return run('FileFinder+ 1.1.2',lambda ui:browse(ui,start))
+def launch(start=None):return run('FileFinder+ 1.1.3',lambda ui:browse(ui,start))
 
 def pick_paths(ui,start=None):
  """Reusable multiselect picker; no editing/execution. Returns immutable paths."""
