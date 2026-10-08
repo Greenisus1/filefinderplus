@@ -1,15 +1,25 @@
-# FileFinder+
+# FileFinder+ 1.1.0
 
-Desktop file browser, UTF-8 text/shell editor and explicit shell runner. Python 3.10+, Tkinter, Bash, Linux desktop or VNC. No App Store dependency; standalone and reusable. No telemetry, automatic execution, upload, file deletion or persistent history.
+Terminal file browser, UTF-8 line editor and explicit shell runner. Works over interactive SSH with no desktop or Tk. Optional Tk GUI stays available. Standalone, no App Store dependency. No telemetry, automatic execution, upload, file deletion or persistent history.
 
-Run `python3 filefinderplus.py` or pass a folder. Open folders by double-clicking, use Up/Home/path bar, select files, then Open text. Hidden files are shown; links are labelled. Text editing is limited to regular non-symlink UTF-8 files without NUL bytes, at most 2 MiB. Binary files are rejected, not decoded or executed. Text uses exact newline bytes when opened; editing can change them. Save and Save as confirm the destination and overwriting. Existing source bytes are rechecked before saving; changed files are refused. Close/open prompts for unsaved edits. Saves preserve permissions but are in-place, not crash-atomic; back up important files. Local files and file paths may contain private data.
+    python3 filefinderplus.py
+    python3 filefinderplus.py /path/to/folder
+    python3 filefinderplus.py --gui
 
-Run .sh confirms the path and working folder. Bash executes the selected on-disk script with your current permissions, no sudo added. Scripts are NOT sandboxed: they can change/delete files, use the network and launch processes. Only run trusted scripts. stdin is closed: interactive password prompts are unsupported. Output is capped at 1 MiB, displayed as text. Stop requests SIGTERM to the process group; detached children or scripts ignoring signals may continue. File changes between confirmation and execution are possible: use stable trusted files. No safety verdict is made by listing a file.
+Terminal: arrows (or j/k), Enter, Esc/q. Cyan header and highlighted selection; monochrome works when colors are unavailable. Open folders, go up/home/by-path, select a file then view/edit/run. View scrolls with arrows. Editor offers replace/insert/delete line, buffer view, Save and Save as. It is a line editor, not a full-screen cursor editor; new lines end in LF. Leaving edited content asks before discarding. Save confirms exact destination and overwriting. Existing source bytes are rechecked; changes are refused. Saves preserve permissions but are in-place, not crash-atomic. Back up important files.
 
-`BrowserFrame(parent, start=None, select_only=False, selection_callback=None)` is the reusable component. Pack/grid its `.frame`. `.selected_paths()` returns a tuple of Paths. `select_only=True` removes editing/execution, suitable for upload selection. Callback receives selected paths. Call `.close()` before destroying a standalone window to handle dirty edits/running script.
+Regular non-symlink UTF-8 files only, without NUL, max 2 MiB. Binary files refused. Hidden files shown, links labelled. Preview/UI replaces terminal control and invisible formatting characters; original bytes are not changed just by viewing. Terminal names/prompts are clipped to screen width. Noninteractive/no-TTY terminals get a clear error, not a fake working UI. Use a Unicode-capable monospace SSH terminal.
 
-App Store Install checks Tk and copies the reusable module into `~/.local/share/filefinderplus/filefinderplus.py`. It replaces that module when reinstalling/updating. Run starts the standalone window. Pushpuffin imports that installed module; no remote download on Run. Tests: `python3 -m unittest -v`. Version 1.0.1. Linux/Xvfb tested; physical Raspberry Pi, macOS and Windows untested. Headless DietPi needs a desktop/VNC session; a bare SSH console cannot show this window.
+Run .sh first shows exact path/working folder and a warning, then explicit confirmation. Bash runs the on-disk script with current permissions, no sudo added. NOT sandboxed: scripts can change/delete files, use network or launch programs. Only run trusted scripts. stdin is closed, so interactive prompts are unsupported. In terminal mode output goes directly to the terminal (including control sequences) and is not capped; terminal scrollback is controlled by your terminal. Ctrl-C sends SIGTERM to its process group, with explicit force-kill choice if it ignores stop. Detached children may remain. GUI output stays capped at 1 MiB with Stop button. File changes between confirmation and run are possible; use stable trusted files.
 
-## Install repair (1.0.1)
+## Optional GUI and reuse
 
-If Tk is missing and apt-get is available while running as root, the reviewed install hook announces and installs python3-tk. Otherwise it stops with instructions. It does not install a desktop. The run hook reports missing or inaccessible DISPLAY with desktop/VNC guidance instead of a traceback.
+    bash app-store.sh install
+    bash app-store.sh run
+    bash app-store.sh gui
+
+Install needs no Tk/display and copies filefinderplus.py, terminal_browser.py and terminal_ui.py into ~/.local/share/filefinderplus. Reinstall replaces these modules. `gui` checks/installs missing python3-tk only root+apt, then requires desktop/VNC; Python --gui needs Tk already installed. GUI path bar, multiselect and text editing remain. Pushpuffin still uses the reusable Tk BrowserFrame and still needs desktop/VNC; it is not converted by this update.
+
+`BrowserFrame(parent, start=None, select_only=False, selection_callback=None)` exposes `.frame`, `.selected_paths()`, callback, `.close()`. `select_only` removes editor/run. No remote downloads on Run.
+
+Python 3.10+, stdlib curses, Bash and Linux. Tests: python3 -m unittest -v. Linux PTY terminal capture and virtual-display GUI tested; physical Pi/non-Linux untested. Resize and tiny terminals are clipped rather than crashing, but 80x24 or larger is recommended.
