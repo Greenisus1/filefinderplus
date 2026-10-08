@@ -81,7 +81,7 @@ def browse(ui,start=None):
    elif choice==2:run_script(ui,path)
   except (OSError,ValueError,UnicodeError) as e:ui.message(str(e))
 
-def launch(start=None):return run('FileFinder+ 1.1.0',lambda ui:browse(ui,start))
+def launch(start=None):return run('FileFinder+ 1.1.2',lambda ui:browse(ui,start))
 
 def pick_paths(ui,start=None):
  """Reusable multiselect picker; no editing/execution. Returns immutable paths."""
